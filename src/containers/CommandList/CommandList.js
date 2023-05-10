@@ -24,9 +24,9 @@ const CommandList = () => {
           if (index === currCommand) {
             return renderCommand(command, index, "ExecutedCommand");
           } else if (index < currCommand) {
-            return renderCommand(command, index, "UndoableCommand");
+            return renderCommand(command, index, "UndoCommand");
           } else {
-            return renderCommand(command, index, "RedoableCommand");
+            return renderCommand(command, index, "RedoCommand");
           }
         })}
       </div>

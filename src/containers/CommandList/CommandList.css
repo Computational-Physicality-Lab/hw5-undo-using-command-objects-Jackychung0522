@@ -14,7 +14,7 @@
   overflow: auto;
   }
   
-  .UndoableCommand {
+  .UndoCommand {
   background-color: #f2f2f2;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -22,7 +22,7 @@
   border-radius: 5px;
   }
   
-  .RedoableCommand {
+  .RedoCommand {
   background-color: #c7c7c7;
   color: #494747;
   margin-top: 5px;

@@ -49,15 +49,17 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 https://github.com/lxieyang/05631-hw5-base
 
+## 以下為作業五資訊 
+
 - 姓名：鍾昀諺
 - 你所實作的網站如何被測試：
 (using Node.js v16)
-npm install
+npm install,
 npm start
 
 或是deploy的網址:https://enchanting-cascaron-b6b807.netlify.app/
 - 你所實作的加分作業項目，以及如何觸發它：
-右邊的command list ，Line 的 undo 和 redo
+右邊的command list ,及line的undo和redo
 - 認為此作業最難實作的部分與原因:
 我認為這次作業最難的地方是了解Command Object Pattern 以及讀懂code變數的意義還有怎麼去使用，因為第一次接觸到這個寫法因此光看懂就花了1-2天的時間，對於每一個操作都有他要去注意的一些細節，一些狀態的設定要精準，後來發現debug有了右邊的command list會快許多後，也漸漸上手了。
 - 其他與軟體設計相關之感興趣內容: 在上學期的課程學了很多design pattern卻沒有接觸過command object pattern，在這次的作業中接觸到了，也對他有一定的了解，覺得很新奇也很有趣。

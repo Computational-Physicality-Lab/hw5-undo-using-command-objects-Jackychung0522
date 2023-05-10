@@ -171,13 +171,13 @@ class App extends Component {
       //console.log("handleMoveShape");
     }
   }
-  changeMoveShape = (oldValue, newData) => {
-    let command = new MoveShapeCommandObject(this.undoHandler);
-    let id = this.state.selectedShapeId;
-    let shape = this.state.shapesMap[id];
-    command.execute(oldValue, newData, id, shape);
+  // changeMoveShape = (oldValue, newData) => {
+  //   let command = new MoveShapeCommandObject(this.undoHandler);
+  //   let id = this.state.selectedShapeId;
+  //   let shape = this.state.shapesMap[id];
+  //   command.execute(oldValue, newData, id, shape);
 
-  }
+  // }
   
   // deleting a shape sets its visibility to false, rather than removing it
   deleteSelectedShape = () => {
@@ -195,7 +195,8 @@ class App extends Component {
         currMode: mode,
         currBorderColor: defaultValues.borderColor,
       });
-    } else {
+    } 
+    else {
       this.setState({ currMode: mode });
     }
   };
