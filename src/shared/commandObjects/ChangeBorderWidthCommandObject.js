@@ -37,7 +37,7 @@ export default class ChangeBorderWidthCommandObject extends CommandObject {
   /* override to undo the operation of this command
    */
   undo() {
-    this.targetObject.borderWidth = this.oldValue;
+    //this.targetObject.borderWidth = this.oldValue;
     this.undoHandler.updateShape(this.targetObject.id, { borderWidth:this.oldValue }, true);
     //this.undoHandler.changeCurrBorderWidth(this.oldValue);
     this.undoHandler.changeCurrMode("select")
@@ -51,7 +51,7 @@ export default class ChangeBorderWidthCommandObject extends CommandObject {
    * can be undone can be redone, so there is no need for a canRedo.
    */
   redo() {
-    this.targetObject.borderWidth= this.newValue;
+    //this.targetObject.borderWidth= this.newValue;
     this.undoHandler.updateShape(this.targetObject.id, { borderWidth:this.targetObject.borderWidth },true);
     //this.undoHandler.changeCurrBorderWidth(this.newValue);
     // maybe also need to fix the palette to show this object's color?

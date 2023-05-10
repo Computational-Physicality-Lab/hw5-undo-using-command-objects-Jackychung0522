@@ -1,4 +1,3 @@
-import { genId } from "../util";
 import CommandObject from "./CommandObject";
 /*
  * top level definition of what Command Objects
@@ -86,7 +85,7 @@ export default class CreateCommandObject extends CommandObject{
         }
       }
       displayCommandContent() {
-        return `Create ${this.targetObject.type} ${this.targetObject.id}`;
+        return `Create ${this.targetObject.type} `;
       }
   }
   

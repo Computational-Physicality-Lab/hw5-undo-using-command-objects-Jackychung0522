@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import ControlContext from "../../contexts/control-context";
-import "./CommandHistory.css";
+import "./CommandList.css";
 console.log("ControlContext: ", ControlContext);
 
 
-const CommandHistory = () => {
+const CommandList = () => {
   const { currCommand ,commandList} = useContext(ControlContext);
   
   const renderCommand = (command, index, className) => {
@@ -34,4 +34,4 @@ const CommandHistory = () => {
   );
 };
 
-export default CommandHistory;
+export default CommandList;

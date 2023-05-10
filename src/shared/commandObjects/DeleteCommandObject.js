@@ -1,4 +1,3 @@
-import { genId } from "../util";
 import CommandObject from "./CommandObject";
 /*
  * top level definition of what Command Objects

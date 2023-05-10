@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import ControlPanel from "./containers/ControlPanel/ControlPanel";
 import Workspace from "./containers/Workspace/Workspace";
-import CommandHistory from "./containers/CommandHistory/CommandHistory";
+import CommandHistory from "./containers/CommandList/CommandList";
 import ControlContext from "./contexts/control-context";
 import { genId, defaultValues } from "./shared/util";
 import ChangeFillColorCommandObject from "./shared/commandObjects/ChangeFillColorCommandObject";
@@ -45,12 +45,11 @@ class App extends Component {
       changeCurrBorderColor: this.changeCurrBorderColor,
       changeCurrMode: this.changeCurrMode,
       moveShape:this.moveShape,
-      canUndo: this.canUndo,
-      canRedo: this.canRedo,
       addShape: this.addShape,
       deleteSelectedShape: this.deleteSelectedShape,
       selectShape: this.selectShape,
       // TODO: fill this up with whatever you need for the command objects
+      handleMoveShape:this.handleMoveShape,
       updateShape: this.updateShape,
       remove: this.remove,
     };
@@ -80,7 +79,7 @@ class App extends Component {
    */
   undo = () => {
     console.log("undo");
-    if (this.canUndo()) {
+    if (this.state.currCommand >= 0) {
       let command = this.state.commandList[this.state.currCommand];
       command.undo();
       this.setState({ currCommand: this.state.currCommand - 1 });
@@ -95,20 +94,14 @@ class App extends Component {
    */
   redo = () => {
     console.log("redo");
-    if (this.canRedo()) {
+    if (this.state.currCommand < this.state.commandList.length - 1) {
       let command = this.state.commandList[this.state.currCommand + 1];
       command.redo();
       this.setState({ currCommand: this.state.currCommand + 1 });
 
     };
   }
-  canUndo() {
-    return (this.state.currCommand >= 0);
-  }
-
-  canRedo() {
-    return (this.state.currCommand < this.state.commandList.length - 1);
-  }
+  
 
   // add the shapeId to the array, and the shape itself to the map
   addShape = (shapeData, id) => {
@@ -166,16 +159,16 @@ class App extends Component {
     }
 
   };
-  handleMoveShape=(oldValue,newValue)=>{
+  handleMoveShape=(draggingShape,oldValue,newValue)=>{
     if (this.state.selectedShapeId) {
      
       
-      let id = this.state.selectedShapeId;
+      //let id = this.state.selectedShapeId;
 
-      let shape = this.state.shapesMap[id];
-      let command = new MoveShapeCommandObject(this.undoHandler,shape,oldValue,newValue);
+      //let shape = this.state.shapesMap[id];
+      let command = new MoveShapeCommandObject(this.undoHandler,draggingShape,oldValue,newValue);
       command.execute();
-
+      //console.log("handleMoveShape");
     }
   }
   changeMoveShape = (oldValue, newData) => {
@@ -278,6 +271,8 @@ class App extends Component {
       shapes,
       shapesMap,
       selectedShapeId,
+      currCommand,
+     
     } = this.state;
 
     // update the context with the functions and values defined above and from state
@@ -305,15 +300,15 @@ class App extends Component {
             moveShape: this.moveShape,
             selectShape:this.selectShape,
             selectedShapeId,
-
+            currCommand,
+            commandList:this.state.commandList,
             deleteSelectedShape: this.deleteSelectedShape,
 
             undo: this.undo,
             redo: this.redo,
-            canRedo: this.canRedo,
-            canUndo: this.canUndo,
+           
             
-            commandList: this.state.commandList,
+            
           }}
         >
           <ControlPanel />

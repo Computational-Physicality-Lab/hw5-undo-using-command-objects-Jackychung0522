@@ -7,6 +7,7 @@ import CursorImg from "../../assets/img/cursor.png";
 import LineImg from "../../assets/img/line.png";
 import supportedColors from "../../shared/supportedColors";
 import ControlContext from "../../contexts/control-context";
+import controlContext from "../../contexts/control-context";
 import { useState } from "react";
 import "./ControlPanel.css";
 
@@ -197,16 +198,25 @@ const Delete = ({ selectedShapeId, deleteSelectedShape }) => {
   );
 };
 
-const UndoRedo = ({ undo, redo , canUndo, canRedo}) => {
+const UndoRedo = ({ undo, redo }) => {
+  const context = useContext(controlContext);
+  const  isUndoDisabled = context.currCommand === -1;
+  const  isRedoDisabled = context.currCommand >= context.commandList.length - 1;
+  console.log("currCommand: ", context.currCommand);
+  console.log("isUndoDisabled: ", isUndoDisabled);
   return (
     <div className="Control">
       <h3>Undo / Redo:</h3>
       <div className="UndoRedoButtonsContainer">
-        <button onClick={() => undo()} disabled={!canUndo}>
+        <button onClick={() => undo() } disabled={  isUndoDisabled} style={{
+            cursor: isUndoDisabled ? "not-allowed" : null,
+          }}>
           <ImUndo className="ButtonIcon" />
           Undo
         </button>{" "}
-        <button onClick={() => redo()} disabled={!canRedo}>
+        <button onClick={() => redo()} disabled={  isRedoDisabled} style={{
+            cursor: isRedoDisabled ? "not-allowed" : null,
+          }}>
           <ImRedo className="ButtonIcon" />
           Redo
         </button>
@@ -231,8 +241,6 @@ const ControlPanel = () => {
     deleteSelectedShape,
     undo,
     redo,
-    canRedo,
-    canUndo,
   } = useContext(ControlContext);
 
   return (
@@ -266,8 +274,7 @@ const ControlPanel = () => {
       <UndoRedo
         undo={undo}
         redo={redo}
-        canRedo={canRedo}
-        canUndo={canUndo}
+        
       />
     </div>
   );

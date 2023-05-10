@@ -1,0 +1,41 @@
+.CommandList {
+  position: absolute;
+  top: 10px;
+  left: 1110px;
+  
+  box-sizing: border-box;
+  border: 1px solid black;
+  border-left-width: 0px;
+  background-color: white;
+  
+  width: 150px;
+  height: 700px;
+  padding: 10px;
+  }
+  
+  .UndoableCommand {
+  background-color: #f2f2f2;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  }
+  
+  .RedoableCommand {
+  background-color: #c7c7c7;
+  color: #494747;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  text-decoration: line-through;
+  }
+  
+  .ExecutedCommand {
+  color: #00ff00;
+  background-color: #242424;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  }

@@ -5,6 +5,9 @@ export default class MoveShapeCommandObject extends CommandObject {
     
     super(undoHandler, true);
     this.targetObject=selectedObj;
+    this.oldValue=oldValue;
+    this.newValue=newValue;
+    console.log("new command");
   }
 
   /* override to return true if this command can be executed,
@@ -21,7 +24,7 @@ export default class MoveShapeCommandObject extends CommandObject {
   execute() {
     
     if (this.targetObject !== null) {
-     
+      //this.undoHandler.updateShape(this.targetObject.id, this.newValue,true);
       if (this.addToUndoStack) {
         this.undoHandler.registerExecution(this);
         //undoStack.push(this);
@@ -32,7 +35,16 @@ export default class MoveShapeCommandObject extends CommandObject {
   /* override to undo the operation of this command
    */
   undo() {
-    this.undoHandler.updateShape(this.targetObject.id, this.oldValue);
+    console.log("oldValue",this.oldValue);
+    console.log("newValue",this.targetObject.initCoords.x);
+    this.undoHandler.updateShape(this.targetObject.id, {initCoords: {
+      x: this.targetObject.initCoords.x,
+      y: this.targetObject.initCoords.y,
+    },
+    finalCoords: {
+      x: this.targetObject.finalCoords.x,
+      y: this.targetObject.finalCoords.y
+    }});
 
    
     // maybe also need to fix the palette to show this object's color?
@@ -44,8 +56,15 @@ export default class MoveShapeCommandObject extends CommandObject {
    * can be undone can be redone, so there is no need for a canRedo.
    */
   redo() {
-   
-    this.undoHandler.updateShape(this.targetObject.id,this.newValue);
+    
+    this.undoHandler.updateShape(this.targetObject.id,{initCoords: {
+      x: this.targetObject.initCoords.x+this.newValue.x-this.oldValue.x,
+      y: this.targetObject.initCoords.y+this.newValue.y-this.oldValue.y,
+    },
+    finalCoords: {
+      x: this.targetObject.finalCoords.x+this.newValue.x-this.oldValue.x,
+      y: this.targetObject.finalCoords.y+this.newValue.y-this.oldValue.y
+    }});
    
     // maybe also need to fix the palette to show this object's color?
   }
@@ -72,5 +91,8 @@ export default class MoveShapeCommandObject extends CommandObject {
       // registered to put it onto the stack
       if (this.addToUndoStack) this.undoHandler.registerExecution({...this});
     }
+  }
+  displayCommandContent(){
+    return `Move ${this.targetObject.type}`;
   }
 }
