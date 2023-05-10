@@ -35,8 +35,8 @@ export default class MoveShapeCommandObject extends CommandObject {
   /* override to undo the operation of this command
    */
   undo() {
-    console.log("oldValue",this.oldValue);
-    console.log("newValue",this.targetObject.initCoords.x);
+    // console.log("oldValue",this.oldValue);
+    // console.log("newValue",this.targetObject.initCoords.x);
     this.undoHandler.updateShape(this.targetObject.id, {initCoords: {
       x: this.targetObject.initCoords.x,
       y: this.targetObject.initCoords.y,
@@ -44,7 +44,7 @@ export default class MoveShapeCommandObject extends CommandObject {
     finalCoords: {
       x: this.targetObject.finalCoords.x,
       y: this.targetObject.finalCoords.y
-    }});
+    }},true);
 
    
     // maybe also need to fix the palette to show this object's color?
@@ -56,15 +56,16 @@ export default class MoveShapeCommandObject extends CommandObject {
    * can be undone can be redone, so there is no need for a canRedo.
    */
   redo() {
-    
+    console.log("oldValue",this.oldValue);
+    console.log("newValue",this.newValue);
     this.undoHandler.updateShape(this.targetObject.id,{initCoords: {
-      x: this.targetObject.initCoords.x+this.newValue.x-this.oldValue.x,
-      y: this.targetObject.initCoords.y+this.newValue.y-this.oldValue.y,
+      x: this.targetObject.initCoords.x+this.newValue.offsetX-this.oldValue.x,
+      y: this.targetObject.initCoords.y+this.newValue.offsetY-this.oldValue.y,
     },
     finalCoords: {
-      x: this.targetObject.finalCoords.x+this.newValue.x-this.oldValue.x,
-      y: this.targetObject.finalCoords.y+this.newValue.y-this.oldValue.y
-    }});
+      x: this.targetObject.finalCoords.x+this.newValue.offsetX-this.oldValue.x,
+      y: this.targetObject.finalCoords.y+this.newValue.offsetY-this.oldValue.y
+    }},true);
    
     // maybe also need to fix the palette to show this object's color?
   }

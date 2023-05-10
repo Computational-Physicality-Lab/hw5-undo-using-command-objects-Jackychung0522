@@ -120,8 +120,8 @@ const SVGLayer = () => {
       setInitPoint({ x: undefined, y: undefined });
       setCurrPoint({ x: undefined, y: undefined });
     } else {
-      
-        if (mouseDownPoint.x !== e.nativeEvent.offsetX || mouseDownPoint.y !== e.nativeEvent.offsetY) {
+        
+        if (mouseDownPoint.x !==e.nativeEvent.offsetX || mouseDownPoint.y !== e.nativeEvent.offsetY) {
           console.log(mouseDownPoint);
           console.log(e.nativeEvent);
           handleMoveShape(draggingShape,mouseDownPoint, e.nativeEvent);
@@ -129,7 +129,8 @@ const SVGLayer = () => {
         setDragging(false);
         setDraggingShape(undefined);
         setMouseDownPoint({ x: undefined, y: undefined });
-      }
+      
+    }
     }
     ;
 
