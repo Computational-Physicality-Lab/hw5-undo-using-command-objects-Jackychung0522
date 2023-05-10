@@ -54,6 +54,8 @@ https://github.com/lxieyang/05631-hw5-base
 (using Node.js v16)
 npm install
 npm start
+
+或是deploy的網址:https://enchanting-cascaron-b6b807.netlify.app/
 - 你所實作的加分作業項目，以及如何觸發它：
 右邊的command list ，Line 的 undo 和 redo
 - 認為此作業最難實作的部分與原因:
