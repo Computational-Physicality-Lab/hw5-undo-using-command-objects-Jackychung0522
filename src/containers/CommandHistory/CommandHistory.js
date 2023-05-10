@@ -1,13 +1,12 @@
 import React, { useContext } from "react";
 import ControlContext from "../../contexts/control-context";
 import "./CommandHistory.css";
-import { useState } from "react";
 console.log("ControlContext: ", ControlContext);
 
 
 const CommandHistory = () => {
-  const { currCommand } = useContext(ControlContext);
-  const [commandList, setCommandList] = useState([]);
+  const { currCommand ,commandList} = useContext(ControlContext);
+  
   const renderCommand = (command, index, className) => {
     return (
       <div className={`Command ${className}`} key={index}>

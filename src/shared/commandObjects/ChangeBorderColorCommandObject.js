@@ -39,8 +39,7 @@ export default class ChangeBorderColorCommandObject extends CommandObject {
   undo() {
     this.targetObject.borderColor  = this.oldValue;
     this.undoHandler.updateShape(this.targetObject.id, { borderColor:this.targetObject.borderColor },true);
-
-   this.undoHandler.changeCurrBorderColor(this.oldValue);
+   this.undoHandler.changeCurrMode("select")
     // maybe also need to fix the palette to show this object's color?
   }
 
@@ -51,8 +50,8 @@ export default class ChangeBorderColorCommandObject extends CommandObject {
    */
   redo() {
     this.targetObject.borderColor = this.newValue;
-    this.undoHandler.updateShape(this.targetObject.id, { borderColor:this.targetObject.borderColor },true);
-    this.undoHandler.changeCurrBorderColor(this.newValue);
+    this.undoHandler.updateShape(this.targetObject.id, { borderColor:this.newValue },true);
+    
     // maybe also need to fix the palette to show this object's color?
   }
 

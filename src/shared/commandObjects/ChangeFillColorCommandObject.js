@@ -40,8 +40,10 @@ export default class ChangeFillColorCommandObject extends CommandObject {
   undo() {
     this.targetObject.fillColor = this.oldValue;
     this.undoHandler.updateShape(this.targetObject.id, { fillColor:this.targetObject.fillColor },true);
-
-   this.undoHandler.changeCurrFillColor(this.oldValue);
+    this.undoHandler.changeCurrMode("select");
+    //this.undoHandler.selectShape(undefined);
+   //this.undoHandler.changeCurrFillColor(this.oldValue);
+   
     // maybe also need to fix the palette to show this object's color?
   }
 
@@ -52,8 +54,8 @@ export default class ChangeFillColorCommandObject extends CommandObject {
    */
   redo() {
     this.targetObject.fillColor = this.newValue;
-    this.undoHandler.updateShape(this.targetObject.id, { fillColor:this.targetObject.fillColor },true);
-    this.undoHandler.changeCurrFillColor(this.newValue);
+    this.undoHandler.updateShape(this.targetObject.id, { fillColor:this.newValue },true);
+    //this.undoHandler.changeCurrFillColor(this.newValue);
     // maybe also need to fix the palette to show this object's color?
   }
 

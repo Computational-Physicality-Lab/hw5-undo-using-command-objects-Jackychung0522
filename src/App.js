@@ -43,6 +43,10 @@ class App extends Component {
       changeCurrFillColor: this.changeCurrFillColor,
       changeCurrBorderWidth: this.changeCurrBorderWidth,
       changeCurrBorderColor: this.changeCurrBorderColor,
+      changeCurrMode: this.changeCurrMode,
+      moveShape:this.moveShape,
+      canUndo: this.canUndo,
+      canRedo: this.canRedo,
       addShape: this.addShape,
       deleteSelectedShape: this.deleteSelectedShape,
       selectShape: this.selectShape,
@@ -128,7 +132,7 @@ class App extends Component {
       command.execute();
     }
     
-    this.setState({ shapes, shapesMap, selectedShapeId: id });
+    this.setState({ shapes, shapesMap });
 
 
   };
@@ -160,7 +164,20 @@ class App extends Component {
     if (this.state.selectedShapeId) {
       this.updateShape(this.state.selectedShapeId, newData);
     }
+
   };
+  handleMoveShape=(oldValue,newValue)=>{
+    if (this.state.selectedShapeId) {
+     
+      
+      let id = this.state.selectedShapeId;
+
+      let shape = this.state.shapesMap[id];
+      let command = new MoveShapeCommandObject(this.undoHandler,shape,oldValue,newValue);
+      command.execute();
+
+    }
+  }
   changeMoveShape = (oldValue, newData) => {
     let command = new MoveShapeCommandObject(this.undoHandler);
     let id = this.state.selectedShapeId;
@@ -234,9 +251,7 @@ class App extends Component {
     }
     
   };
-  changeCurrFillColorState = (fillColor) => {
-   
-  }
+  
   selectShape = (id) => {
     const { shapesMap, shapes } = this.state
     this.setState({
@@ -280,6 +295,7 @@ class App extends Component {
             currBorderWidth,
             changeCurrBorderWidth: this.changeCurrBorderWidth,
             handleBorderWidthMouseUp:this.handleBorderWidthMouseUp,
+            handleMoveShape:this.handleMoveShape,
             currFillColor,
             changeCurrFillColor: this.changeCurrFillColor,
 
@@ -296,6 +312,8 @@ class App extends Component {
             redo: this.redo,
             canRedo: this.canRedo,
             canUndo: this.canUndo,
+            
+            commandList: this.state.commandList,
           }}
         >
           <ControlPanel />

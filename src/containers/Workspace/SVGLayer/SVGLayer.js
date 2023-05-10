@@ -19,6 +19,7 @@ const SVGLayer = () => {
     moveShape,
     selectedShapeId,
     selectShape,
+    handleMoveShape,
   } = useContext(ControlContext);
 
   // use useState to set elements in the React state directly
@@ -34,7 +35,7 @@ const SVGLayer = () => {
     x: undefined,
     y: undefined,
   });
-
+  
   const handleMouseDown = (e) => {
     if (currMode !== "select") {
       // should create
@@ -119,6 +120,10 @@ const SVGLayer = () => {
       setInitPoint({ x: undefined, y: undefined });
       setCurrPoint({ x: undefined, y: undefined });
     } else {
+
+      if(mouseDownPoint.x !== e.nativeEvent.offsetX || mouseDownPoint.y !== e.nativeEvent.offsetY){
+        handleMoveShape(mouseDownPoint,e.nativeEvent);
+      }
       setDragging(false);
       setDraggingShape(undefined);
       setMouseDownPoint({ x: undefined, y: undefined });

@@ -1,8 +1,10 @@
 import CommandObject from "./CommandObject";
 
 export default class MoveShapeCommandObject extends CommandObject {
-  constructor(undoHandler) {
+  constructor(undoHandler,selectedObj,oldValue,newValue) {
+    
     super(undoHandler, true);
+    this.targetObject=selectedObj;
   }
 
   /* override to return true if this command can be executed,
@@ -16,17 +18,10 @@ export default class MoveShapeCommandObject extends CommandObject {
    * pass in false for addToUndoStack if this is a command which is NOT
    * put on the undo stack, like Copy, or a change of selection or Save
    */
-  execute(oldValue, newValue,id,selectedObj) {
+  execute() {
     
-    if (selectedObj !== null) {
-      this.targetObject = selectedObj; // global variable for selected
-      this.oldValue = oldValue;// object's current color
-      this.newValue = newValue; // get the color widget's current color
+    if (this.targetObject !== null) {
      
-
-      // Note that this command object must be a NEW command object so it can be
-      // registered to put it onto the stack
-      this.undoHandler.updateShape(id, newValue);
       if (this.addToUndoStack) {
         this.undoHandler.registerExecution(this);
         //undoStack.push(this);

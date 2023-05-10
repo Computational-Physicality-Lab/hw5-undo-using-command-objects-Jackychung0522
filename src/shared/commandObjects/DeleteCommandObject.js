@@ -27,7 +27,6 @@ export default class DeleteCommandObject extends CommandObject{
         if (this.addToUndoStack) {
        
         this.undoHandler.registerExecution(this);
-        //undoStack.push(this);
       }
         
     }
@@ -42,7 +41,8 @@ export default class DeleteCommandObject extends CommandObject{
         //this.undoHandler.selectShape(undefined);
         this.undoHandler.selectShape(this.targetObject.id);
         this.undoHandler.addShape(this.targetObject, this.targetObject.id);
-        
+        this.undoHandler.changeCurrMode("select")
+       
 
     }
   

@@ -25,7 +25,8 @@ export default class CreateCommandObject extends CommandObject{
     execute() {
        
         if (this.addToUndoStack) {
-        
+        this.undoHandler.selectShape(undefined);
+        //this.undoHandler.changeCurrMode("create");
         this.undoHandler.registerExecution(this);
         console.log(this.targetObject);
         //undoStack.push(this);
@@ -43,6 +44,8 @@ export default class CreateCommandObject extends CommandObject{
         //this.undoHandler.selectShape(undefined);
         this.undoHandler.selectShape(undefined);
         this.undoHandler.remove(this.targetObject);
+        this.undoHandler.changeCurrMode("select");
+        
 
     }
   
