@@ -53,4 +53,5 @@ export default class CommandObject {
    * object on the undo stack.  NOTE: Repeat is extra credit.
    */
   repeat() {}
+  displayCommandContent() {}
 }

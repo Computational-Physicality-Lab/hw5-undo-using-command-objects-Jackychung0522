@@ -2,10 +2,15 @@ import React, { Component } from "react";
 
 import ControlPanel from "./containers/ControlPanel/ControlPanel";
 import Workspace from "./containers/Workspace/Workspace";
-
+import CommandHistory from "./containers/CommandHistory/CommandHistory";
 import ControlContext from "./contexts/control-context";
 import { genId, defaultValues } from "./shared/util";
-
+import ChangeFillColorCommandObject from "./shared/commandObjects/ChangeFillColorCommandObject";
+import ChangeBorderWidthCommandObject from "./shared/commandObjects/ChangeBorderWidthCommandObject";
+import ChangeBorderColorCommandObject from "./shared/commandObjects/ChangeBorderColorCommandObject";
+import CreateCommandObject from "./shared/commandObjects/CreateCommandObject";
+import MoveShapeCommandObject from "./shared/commandObjects/MoveShapeCommandObject";
+import DeleteCommandObject from "./shared/commandObjects/DeleteCommandObject";
 import "./App.css";
 
 class App extends Component {
@@ -35,7 +40,15 @@ class App extends Component {
      */
     this.undoHandler = {
       registerExecution: this.registerExecution,
+      changeCurrFillColor: this.changeCurrFillColor,
+      changeCurrBorderWidth: this.changeCurrBorderWidth,
+      changeCurrBorderColor: this.changeCurrBorderColor,
+      addShape: this.addShape,
+      deleteSelectedShape: this.deleteSelectedShape,
+      selectShape: this.selectShape,
       // TODO: fill this up with whatever you need for the command objects
+      updateShape: this.updateShape,
+      remove: this.remove,
     };
   }
 
@@ -44,7 +57,17 @@ class App extends Component {
    * add the commandObj to the commandList so
    * that is available for undoing.
    */
-  registerExecution = (commandObject) => {};
+  registerExecution = (commandObject) => {
+    let commandList = [...this.state.commandList];
+    let currCommand = this.state.currCommand;
+    commandList = commandList.slice(0, this.state.currCommand + 1);
+    commandList.push(commandObject);
+    this.setState({ commandList });
+    currCommand++;
+    this.setState({ currCommand });
+
+  };
+
 
   /*
    * TODO:
@@ -53,6 +76,11 @@ class App extends Component {
    */
   undo = () => {
     console.log("undo");
+    if (this.canUndo()) {
+      let command = this.state.commandList[this.state.currCommand];
+      command.undo();
+      this.setState({ currCommand: this.state.currCommand - 1 });
+    }
   };
 
   /*
@@ -63,27 +91,69 @@ class App extends Component {
    */
   redo = () => {
     console.log("redo");
-  };
+    if (this.canRedo()) {
+      let command = this.state.commandList[this.state.currCommand + 1];
+      command.redo();
+      this.setState({ currCommand: this.state.currCommand + 1 });
+
+    };
+  }
+  canUndo() {
+    return (this.state.currCommand >= 0);
+  }
+
+  canRedo() {
+    return (this.state.currCommand < this.state.commandList.length - 1);
+  }
 
   // add the shapeId to the array, and the shape itself to the map
-  addShape = (shapeData) => {
+  addShape = (shapeData, id) => {
     let shapes = [...this.state.shapes];
     let shapesMap = { ...this.state.shapesMap };
-    const id = genId();
-    shapesMap[id] = {
-      ...shapeData,
-      id,
-    };
-    shapes.push(id);
+
+
+
+    if (shapesMap[id]) {
+      shapesMap[id].visible = true;
+      console.log(id);
+    }
+    else {
+      id = genId();
+      shapesMap[id] = {
+        ...shapeData,
+        id,
+      };
+      shapes.push(id);
+      let command = new CreateCommandObject(this.undoHandler, shapesMap[id]);
+      command.execute();
+    }
+    
     this.setState({ shapes, shapesMap, selectedShapeId: id });
+
+
+  };
+  remove = (targetObject) => {
+    let id = targetObject.id;
+    let shapesMap = { ...this.state.shapesMap };
+
+    shapesMap[id].visible = false;
+
+    this.setState({ shapesMap, selectedShapeId: undefined });
   };
 
+
   // get the shape by its id, and update its properties
-  updateShape = (shapeId, newData) => {
+  updateShape = (shapeId, newData,isSelect) => {
     let shapesMap = { ...this.state.shapesMap };
     let targetShape = shapesMap[shapeId];
     shapesMap[shapeId] = { ...targetShape, ...newData };
-    this.setState({ shapesMap });
+    
+    this.setState({ shapesMap }, function() { 
+      if(isSelect){
+        this.selectShape(shapeId);
+      }
+    });
+
   };
 
   moveShape = (newData) => {
@@ -91,12 +161,22 @@ class App extends Component {
       this.updateShape(this.state.selectedShapeId, newData);
     }
   };
+  changeMoveShape = (oldValue, newData) => {
+    let command = new MoveShapeCommandObject(this.undoHandler);
+    let id = this.state.selectedShapeId;
+    let shape = this.state.shapesMap[id];
+    command.execute(oldValue, newData, id, shape);
 
+  }
+  
   // deleting a shape sets its visibility to false, rather than removing it
   deleteSelectedShape = () => {
     let shapesMap = { ...this.state.shapesMap };
     shapesMap[this.state.selectedShapeId].visible = false;
     this.setState({ shapesMap, selectedShapeId: undefined });
+
+    let command=new DeleteCommandObject(this.undoHandler,shapesMap[this.state.selectedShapeId]);
+    command.execute();
   };
 
   changeCurrMode = (mode) => {
@@ -114,23 +194,66 @@ class App extends Component {
     this.setState({ currBorderColor: borderColor });
     if (this.state.selectedShapeId) {
       this.updateShape(this.state.selectedShapeId, { borderColor });
-    }
-  };
+      let id = this.state.selectedShapeId;
+      let shape = this.state.shapesMap[id];
 
+      let command = new ChangeBorderColorCommandObject(this.undoHandler);
+      command.execute(shape, borderColor, id);
+    }
+    
+    
+
+  };
+  
   changeCurrBorderWidth = (borderWidth) => {
     this.setState({ currBorderWidth: borderWidth });
     if (this.state.selectedShapeId) {
       this.updateShape(this.state.selectedShapeId, { borderWidth });
     }
   };
+  handleBorderWidthMouseUp=(borderWidth,oldvalue)=>{
+    if (this.state.selectedShapeId) {
+      this.updateShape(this.state.selectedShapeId, { borderWidth });
+      let command = new ChangeBorderWidthCommandObject(this.undoHandler);
+      let id = this.state.selectedShapeId;
 
+      let shape = this.state.shapesMap[id];
+      command.execute(shape, borderWidth, id,oldvalue);
+
+    }
+  }
+  
   changeCurrFillColor = (fillColor) => {
     this.setState({ currFillColor: fillColor });
     if (this.state.selectedShapeId) {
       this.updateShape(this.state.selectedShapeId, { fillColor });
+      let command = new ChangeFillColorCommandObject(this.undoHandler);
+      let id = this.state.selectedShapeId;
+      let shape = this.state.shapesMap[id];
+      command.execute(shape, fillColor, id);
     }
+    
   };
-
+  changeCurrFillColorState = (fillColor) => {
+   
+  }
+  selectShape = (id) => {
+    const { shapesMap, shapes } = this.state
+    this.setState({
+      selectedShapeId: id,
+      
+    });
+    if (id) {
+      const { borderColor, borderWidth, fillColor } = shapesMap[
+        shapes.filter((shapeId) => shapeId === id)[0]
+      ];
+      this.setState({
+        currBorderColor: borderColor,
+        currBorderWidth: borderWidth,
+        currFillColor: fillColor,
+      });
+    }
+  }
   render() {
     const {
       currMode,
@@ -145,8 +268,10 @@ class App extends Component {
     // update the context with the functions and values defined above and from state
     // and pass it to the structure below it (control panel and workspace)
     return (
+
       <React.Fragment>
         <ControlContext.Provider
+
           value={{
             currMode,
             changeCurrMode: this.changeCurrMode,
@@ -154,6 +279,7 @@ class App extends Component {
             changeCurrBorderColor: this.changeCurrBorderColor,
             currBorderWidth,
             changeCurrBorderWidth: this.changeCurrBorderWidth,
+            handleBorderWidthMouseUp:this.handleBorderWidthMouseUp,
             currFillColor,
             changeCurrFillColor: this.changeCurrFillColor,
 
@@ -161,28 +287,20 @@ class App extends Component {
             shapesMap,
             addShape: this.addShape,
             moveShape: this.moveShape,
+            selectShape:this.selectShape,
             selectedShapeId,
-            selectShape: (id) => {
-              this.setState({ selectedShapeId: id });
-              if (id) {
-                const { borderColor, borderWidth, fillColor } = shapesMap[
-                  shapes.filter((shapeId) => shapeId === id)[0]
-                ];
-                this.setState({
-                  currBorderColor: borderColor,
-                  currBorderWidth: borderWidth,
-                  currFillColor: fillColor,
-                });
-              }
-            },
+
             deleteSelectedShape: this.deleteSelectedShape,
 
             undo: this.undo,
             redo: this.redo,
+            canRedo: this.canRedo,
+            canUndo: this.canUndo,
           }}
         >
           <ControlPanel />
           <Workspace />
+          <CommandHistory />
         </ControlContext.Provider>
       </React.Fragment>
     );

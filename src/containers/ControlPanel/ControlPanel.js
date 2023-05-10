@@ -7,7 +7,7 @@ import CursorImg from "../../assets/img/cursor.png";
 import LineImg from "../../assets/img/line.png";
 import supportedColors from "../../shared/supportedColors";
 import ControlContext from "../../contexts/control-context";
-
+import { useState } from "react";
 import "./ControlPanel.css";
 
 const Modes = ({
@@ -145,7 +145,17 @@ const FillColor = ({ currFillColor, changeCurrFillColor, currBorderColor }) => {
   );
 };
 
-const BorderWidth = ({ currBorderWidth, changeCurrBorderWidth }) => {
+const BorderWidth = ({ currBorderWidth, changeCurrBorderWidth,handleBorderWidthMouseUp }) => {
+  let [prevWidth, setPrevWidth] = useState(1);
+  let context = useContext(ControlContext);
+  function mousedownEvent(event) {
+    if (context.selectedShapeId) {
+      setPrevWidth(parseInt(context.shapesMap[context.selectedShapeId].borderWidth));
+    } else {
+      setPrevWidth(1);
+    }
+  }
+  
   return (
     <div className="Control">
       <h3>Border width:</h3>
@@ -154,7 +164,9 @@ const BorderWidth = ({ currBorderWidth, changeCurrBorderWidth }) => {
           type="range"
           tabIndex="-1"
           style={{ width: 200 }}
+          onMouseDown={(e) => mousedownEvent(e)}
           onChange={(e) => changeCurrBorderWidth(e.target.value)}
+          onMouseUp={(e) => handleBorderWidthMouseUp(e.target.value,prevWidth)}
           min={1}
           max={30}
           value={currBorderWidth}
@@ -185,16 +197,16 @@ const Delete = ({ selectedShapeId, deleteSelectedShape }) => {
   );
 };
 
-const UndoRedo = ({ undo, redo }) => {
+const UndoRedo = ({ undo, redo , canUndo, canRedo}) => {
   return (
     <div className="Control">
       <h3>Undo / Redo:</h3>
       <div className="UndoRedoButtonsContainer">
-        <button onClick={() => undo()}>
+        <button onClick={() => undo()} disabled={!canUndo}>
           <ImUndo className="ButtonIcon" />
           Undo
         </button>{" "}
-        <button onClick={() => redo()}>
+        <button onClick={() => redo()} disabled={!canRedo}>
           <ImRedo className="ButtonIcon" />
           Redo
         </button>
@@ -214,10 +226,13 @@ const ControlPanel = () => {
     changeCurrFillColor,
     currBorderWidth,
     changeCurrBorderWidth,
+    handleBorderWidthMouseUp,
     selectedShapeId,
     deleteSelectedShape,
     undo,
     redo,
+    canRedo,
+    canUndo,
   } = useContext(ControlContext);
 
   return (
@@ -237,6 +252,7 @@ const ControlPanel = () => {
       <BorderWidth
         currBorderWidth={currBorderWidth}
         changeCurrBorderWidth={changeCurrBorderWidth}
+        handleBorderWidthMouseUp={handleBorderWidthMouseUp}
       />
       <FillColor
         currFillColor={currFillColor}
@@ -247,7 +263,12 @@ const ControlPanel = () => {
         selectedShapeId={selectedShapeId}
         deleteSelectedShape={deleteSelectedShape}
       />
-      <UndoRedo undo={undo} redo={redo} />
+      <UndoRedo
+        undo={undo}
+        redo={redo}
+        canRedo={canRedo}
+        canUndo={canUndo}
+      />
     </div>
   );
 };

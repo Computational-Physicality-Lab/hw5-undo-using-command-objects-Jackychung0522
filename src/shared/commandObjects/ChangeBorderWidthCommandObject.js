@@ -1,9 +1,8 @@
 import CommandObject from "./CommandObject";
 
-export default class ChangeFillColorCommandObject extends CommandObject {
-  constructor(undoHandler,selectedObj) {
+export default class ChangeBorderWidthCommandObject extends CommandObject {
+  constructor(undoHandler) {
     super(undoHandler, true);
-    this.targetObject=selectedObj;
   }
 
   /* override to return true if this command can be executed,
@@ -17,17 +16,17 @@ export default class ChangeFillColorCommandObject extends CommandObject {
    * pass in false for addToUndoStack if this is a command which is NOT
    * put on the undo stack, like Copy, or a change of selection or Save
    */
-  execute(selectedObj, fillColor,id) {
-   
-    if (selectedObj !== undefined) {
+  execute(selectedObj, borderWidth,id,oldvalue) {
+    //this.undoHandler.ChangeBorderWidthCommandObject();
+    if (selectedObj !== null) {
       this.targetObject = selectedObj; // global variable for selected
-      this.oldValue = selectedObj.fillColor; // object's current color
-      this.newValue = fillColor // get the color widget's current color
-      selectedObj.fillColor = this.newValue; // actually change
+      this.oldValue = oldvalue; // object's current color
+      this.newValue = borderWidth // get the color widget's current color
+      //selectedObj.borderWidth= this.newValue; // actually change
 
       // Note that this command object must be a NEW command object so it can be
       // registered to put it onto the stack
-      this.undoHandler.updateShape(id, { fillColor});
+      //this.undoHandler.updateShape(id, { borderWidth });
       if (this.addToUndoStack) {
         this.undoHandler.registerExecution(this);
         //undoStack.push(this);
@@ -38,10 +37,10 @@ export default class ChangeFillColorCommandObject extends CommandObject {
   /* override to undo the operation of this command
    */
   undo() {
-    this.targetObject.fillColor = this.oldValue;
-    this.undoHandler.updateShape(this.targetObject.id, { fillColor:this.targetObject.fillColor },true);
-
-   this.undoHandler.changeCurrFillColor(this.oldValue);
+    this.targetObject.borderWidth = this.oldValue;
+    this.undoHandler.updateShape(this.targetObject.id, { borderWidth:this.oldValue }, true);
+    this.undoHandler.changeCurrBorderWidth(this.oldValue);
+   //this.undoHandler.changeCurrFillColorState(this.oldValue);
     // maybe also need to fix the palette to show this object's color?
   }
 
@@ -51,9 +50,9 @@ export default class ChangeFillColorCommandObject extends CommandObject {
    * can be undone can be redone, so there is no need for a canRedo.
    */
   redo() {
-    this.targetObject.fillColor = this.newValue;
-    this.undoHandler.updateShape(this.targetObject.id, { fillColor:this.targetObject.fillColor },true);
-    this.undoHandler.changeCurrFillColor(this.newValue);
+    this.targetObject.borderWidth= this.newValue;
+    this.undoHandler.updateShape(this.targetObject.id, { borderWidth:this.targetObject.borderWidth },true);
+    this.undoHandler.changeCurrBorderWidth(this.newValue);
     // maybe also need to fix the palette to show this object's color?
   }
 
@@ -71,9 +70,9 @@ export default class ChangeFillColorCommandObject extends CommandObject {
   repeat(selectedObj) {
     if (selectedObj !== null) {
       this.targetObject = selectedObj; // get new selected obj
-      this.oldValue = selectedObj.fillColor; // object's current color
+      this.oldValue = selectedObj.borderWidth; // object's current color
       // no change to newValue since reusing the same color
-      selectedObj.fillColor = this.newValue; // actually change
+      selectedObj.borderWidth = this.newValue; // actually change
 
       // Note that this command object must be a NEW command object so it can be
       // registered to put it onto the stack
@@ -81,7 +80,6 @@ export default class ChangeFillColorCommandObject extends CommandObject {
     }
   }
   displayCommandContent() {
-    return `Change ${this.targetObject.type} fill color to ${this.newValue}`;
+    return `Change ${this.targetObject.type} border width to ${this.newValue}`;
   }
 }
-

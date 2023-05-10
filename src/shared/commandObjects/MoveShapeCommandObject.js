@@ -1,9 +1,8 @@
 import CommandObject from "./CommandObject";
 
-export default class ChangeFillColorCommandObject extends CommandObject {
-  constructor(undoHandler,selectedObj) {
+export default class MoveShapeCommandObject extends CommandObject {
+  constructor(undoHandler) {
     super(undoHandler, true);
-    this.targetObject=selectedObj;
   }
 
   /* override to return true if this command can be executed,
@@ -17,17 +16,17 @@ export default class ChangeFillColorCommandObject extends CommandObject {
    * pass in false for addToUndoStack if this is a command which is NOT
    * put on the undo stack, like Copy, or a change of selection or Save
    */
-  execute(selectedObj, fillColor,id) {
-   
-    if (selectedObj !== undefined) {
+  execute(oldValue, newValue,id,selectedObj) {
+    
+    if (selectedObj !== null) {
       this.targetObject = selectedObj; // global variable for selected
-      this.oldValue = selectedObj.fillColor; // object's current color
-      this.newValue = fillColor // get the color widget's current color
-      selectedObj.fillColor = this.newValue; // actually change
+      this.oldValue = oldValue;// object's current color
+      this.newValue = newValue; // get the color widget's current color
+     
 
       // Note that this command object must be a NEW command object so it can be
       // registered to put it onto the stack
-      this.undoHandler.updateShape(id, { fillColor});
+      this.undoHandler.updateShape(id, newValue);
       if (this.addToUndoStack) {
         this.undoHandler.registerExecution(this);
         //undoStack.push(this);
@@ -38,10 +37,9 @@ export default class ChangeFillColorCommandObject extends CommandObject {
   /* override to undo the operation of this command
    */
   undo() {
-    this.targetObject.fillColor = this.oldValue;
-    this.undoHandler.updateShape(this.targetObject.id, { fillColor:this.targetObject.fillColor },true);
+    this.undoHandler.updateShape(this.targetObject.id, this.oldValue);
 
-   this.undoHandler.changeCurrFillColor(this.oldValue);
+   
     // maybe also need to fix the palette to show this object's color?
   }
 
@@ -51,9 +49,9 @@ export default class ChangeFillColorCommandObject extends CommandObject {
    * can be undone can be redone, so there is no need for a canRedo.
    */
   redo() {
-    this.targetObject.fillColor = this.newValue;
-    this.undoHandler.updateShape(this.targetObject.id, { fillColor:this.targetObject.fillColor },true);
-    this.undoHandler.changeCurrFillColor(this.newValue);
+   
+    this.undoHandler.updateShape(this.targetObject.id,this.newValue);
+   
     // maybe also need to fix the palette to show this object's color?
   }
 
@@ -80,8 +78,4 @@ export default class ChangeFillColorCommandObject extends CommandObject {
       if (this.addToUndoStack) this.undoHandler.registerExecution({...this});
     }
   }
-  displayCommandContent() {
-    return `Change ${this.targetObject.type} fill color to ${this.newValue}`;
-  }
 }
-

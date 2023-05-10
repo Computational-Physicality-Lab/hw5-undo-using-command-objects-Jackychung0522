@@ -18,9 +18,11 @@ const controlContext = createContext({
   selectedShapeId: "", // a string or undefined
   selectShape: () => {},
   deleteSelectedShape: () => {},
-
+  
   undo: () => {},
   redo: () => {},
+  commandList: [],
+  currCommand: -1,
 });
 
 export default controlContext;
